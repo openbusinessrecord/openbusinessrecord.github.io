@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OBP | Create Your Business Card</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 50px auto; line-height: 1.6; }
+        .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; box-shadow: 2px 2px 10px #eee; }
+        input, select { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ddd; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; width: 100%; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        pre { background: #f4f4f4; padding: 10px; font-size: 12px; overflow-x: auto; display: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>OBP Business Card</h2>
+        <p><small>Fill this out to generate your <b>business.json</b> file.</small></p>
+        
+        <input type="text" id="bizName" placeholder="Business Name (e.g. Stone's Pizza)" required>
+        <select id="bizType">
+            <option value="LocalBusiness">General Business</option>
+            <option value="Restaurant">Restaurant</option>
+            <option value="ProfessionalService">Home Service / Contractor</option>
+            <option value="Store">Retail Store</option>
+        </select>
+        <input type="text" id="bizAddress" placeholder="Physical Address (City, State, Zip)">
+        <input type="tel" id="bizPhone" placeholder="Public Phone Number">
+        <input type="tel" id="bizWA" placeholder="WhatsApp Number (for direct chat)">
+        <input type="email" id="bizEmail" placeholder="Public Email">
+        
+        <button onclick="generateJSON()">Generate & Download business.json</button>
+        
+        <h3 id="previewTitle" style="display:none;">Code Preview:</h3>
+        <pre id="jsonPreview"></pre>
+    </div>
+
+    <script>
+        function generateJSON() {
+            const data = {
+                "@context": "https://schema.org",
+                "@type": document.getElementById('bizType').value,
+                "name": document.getElementById('bizName').value,
+                "address": document.getElementById('bizAddress').value,
+                "telephone": document.getElementById('bizPhone').value,
+                "email": document.getElementById('bizEmail').value,
+                "obp_metadata": {
+                    "protocol": "OBP-v1.0",
+                    "last_pulse": new Date().toISOString().split('T')[0],
+                    "whatsapp": document.getElementById('bizWA').value,
+                    "status": "active"
+                }
+            };
+
+            const jsonStr = JSON.stringify(data, null, 2);
+            document.getElementById('jsonPreview').innerText = jsonStr;
+            document.getElementById('jsonPreview').style.display = 'block';
+            document.getElementById('previewTitle').style.display = 'block';
+
+            // Automatic Download
+            const blob = new Blob([jsonStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "business.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
