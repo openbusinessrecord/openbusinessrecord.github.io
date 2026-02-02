@@ -3,7 +3,7 @@ import { Octokit } from "@octokit/rest";
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 const OWNER = 'openbusinessrecord';
-const REPO = 'openbusinessrecord';
+const REPO = 'openbusinessrecord.github.io';
 
 export default async function handler(req, res) {
 
@@ -22,10 +22,20 @@ export default async function handler(req, res) {
 
     if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
-  const record = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-  const slug = record.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  let record;
+  try {
+    record = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+  } catch (e) {
+    return res.status(400).json({ error: 'Invalid JSON body.' });
+  }
+  if (!record || typeof record.name !== 'string' || !record.name.trim()) {
+    return res.status(400).json({ error: 'Missing or invalid business name.' });
+  }
+
+  const slug = record.name.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
   const fileName = `${slug}.json`;
   const branchName = `submission-${slug}-${Date.now()}`;
+  const websiteLink = record.url ? `[Check Website](${record.url})` : '_No URL provided_';
 
   try {
     // 1. Get the SHA of the latest commit on 'main' to branch off from
@@ -55,12 +65,13 @@ export default async function handler(req, res) {
       title: `🚨 New OBR Record: ${record.name}`,
       head: branchName,
       base: 'main',
-      body: `Reviewing new business registration for **${record.name}**.\n\n[Check Website](${record.url})`
+      body: `Reviewing new business registration for **${record.name}**.\n\n${websiteLink}`
     });
 
     return res.status(200).json({ success: true, pr_url: pr.data.html_url });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "System failed to create submission." });
+    console.error('save-record error:', error?.response?.data || error?.message || error);
+    const msg = error?.response?.data?.message || error?.message || 'System failed to create submission.';
+    return res.status(500).json({ error: msg });
   }
 }
