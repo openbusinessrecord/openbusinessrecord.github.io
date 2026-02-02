@@ -7,7 +7,12 @@ const REPO = 'openbusinessrecord';
 
 export default async function handler(req, res) {
 
-    res.setHeader('Access-Control-Allow-Origin', 'https://yourname.github.io');
+    const origin = req.headers.origin || '';
+    const allowed = ['https://openbusinessrecord.github.io', 'https://openbusinessrecord.org', 'http://localhost:3000', 'http://127.0.0.1:5500'];
+    if (allowed.some(o => origin === o || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')))
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    else
+        res.setHeader('Access-Control-Allow-Origin', 'https://openbusinessrecord.org');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     
@@ -17,7 +22,7 @@ export default async function handler(req, res) {
 
     if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
-  const record = req.body;
+  const record = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
   const slug = record.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
   const fileName = `${slug}.json`;
   const branchName = `submission-${slug}-${Date.now()}`;

@@ -8,11 +8,7 @@
         .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; box-shadow: 2px 2px 10px #eee; }
         input, select { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ddd; }
         .actions { display: flex; gap: 10px; margin: 16px 0; }
-        .actions { flex-wrap: wrap; }
-        .actions button { flex: 1; min-width: 140px; padding: 10px 16px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .btn-generate { background: #334155; color: white; width: 100%; }
-        .btn-generate:hover { background: #1e293b; }
-        .step2-actions { display: none; margin-top: 0; }
+        .actions button { flex: 1; padding: 10px 16px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .btn-download { background: #e2e8f0; color: #334155; }
         .btn-download:hover { background: #cbd5e1; }
         .btn-host { background: #007bff; color: white; }
@@ -45,20 +41,19 @@
         <input type="email" id="bizEmail" placeholder="Public Email">
         
         <div class="actions">
-            <button type="button" class="btn-generate" onclick="generatePreview()">Generate preview</button>
+            <button type="button" class="btn-download" onclick="generateAndDownload()">Generate &amp; Download</button>
+            <button type="button" class="btn-host" onclick="generateAndHost()">I don’t have a website — Host on OBR</button>
         </div>
         <p id="hostStatus"></p>
         
         <h3 id="previewTitle" class="preview-title">Preview</h3>
         <pre id="jsonPreview"></pre>
-        
-        <div id="step2Actions" class="actions step2-actions">
-            <button type="button" class="btn-download" onclick="downloadRecord()">Download</button>
-            <button type="button" class="btn-host" onclick="hostRecord()">I don’t have a website — Host on OBR</button>
-        </div>
     </div>
 
     <script>
+        // Host on OBR submits to this API (override with window.OBR_API_URL if needed).
+        var API_SAVE_RECORD = (typeof window !== 'undefined' && window.OBR_API_URL) ? window.OBR_API_URL : 'https://openbusinessrecord-github-io.vercel.app/api/save-record';
+
         var REQUIRED = { bizName: 'Business name', bizAddress: 'Address', bizPhone: 'Phone number' };
         var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -113,8 +108,6 @@
             };
         }
 
-        var generatedRecord = null;
-
         function showPreview(data) {
             var jsonStr = JSON.stringify(data, null, 2);
             document.getElementById('jsonPreview').innerText = jsonStr;
@@ -123,20 +116,12 @@
             return jsonStr;
         }
 
-        function generatePreview() {
+        function generateAndDownload() {
             var result = validateForm();
             if (!result.valid) { showValidationErrors(result.errors); return; }
             clearValidationErrors();
-            generatedRecord = buildRecord("self-hosted");
-            showPreview(generatedRecord);
-            document.getElementById('step2Actions').style.display = 'flex';
-            document.getElementById('hostStatus').style.display = 'none';
-            document.getElementById('hostStatus').innerHTML = '';
-        }
-
-        function downloadRecord() {
-            if (!generatedRecord) return;
-            var jsonStr = JSON.stringify(generatedRecord, null, 2);
+            var data = buildRecord("self-hosted");
+            var jsonStr = showPreview(data);
             var blob = new Blob([jsonStr], { type: "application/json" });
             var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
@@ -148,17 +133,18 @@
             URL.revokeObjectURL(url);
         }
 
-        async function hostRecord() {
-            if (!generatedRecord) return;
-            var recordForHost = JSON.parse(JSON.stringify(generatedRecord));
-            recordForHost.obr_metadata.hosting = "registry";
-            var jsonStr = JSON.stringify(recordForHost, null, 2);
+        async function generateAndHost() {
+            var result = validateForm();
+            if (!result.valid) { showValidationErrors(result.errors); return; }
+            clearValidationErrors();
+            var data = buildRecord("registry");
+            var jsonStr = showPreview(data);
             var statusEl = document.getElementById('hostStatus');
             statusEl.style.display = 'block';
             statusEl.textContent = 'Submitting…';
             statusEl.style.color = '#64748b';
             try {
-                var res = await fetch('/api/save-record', {
+                var res = await fetch(API_SAVE_RECORD, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: jsonStr
