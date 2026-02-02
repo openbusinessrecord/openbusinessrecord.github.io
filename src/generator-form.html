@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>OBP | Create Your Business Card</title>
+    <title>OBR | Create Your Business Card</title>
     <style>
         body { font-family: sans-serif; max-width: 500px; margin: 50px auto; line-height: 1.6; }
         .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; box-shadow: 2px 2px 10px #eee; }
@@ -14,7 +14,7 @@
 </head>
 <body>
     <div class="card">
-        <h2>OBP Business Card</h2>
+        <h2>OBR Business Card</h2>
         <p><small>Fill this out to generate your <b>business.json</b> file.</small></p>
         
         <input type="text" id="bizName" placeholder="Business Name (e.g. Stone's Pizza)" required>
@@ -44,8 +44,8 @@
                 "address": document.getElementById('bizAddress').value,
                 "telephone": document.getElementById('bizPhone').value,
                 "email": document.getElementById('bizEmail').value,
-                "obp_metadata": {
-                    "protocol": "OBP-v1.0",
+                "obr_metadata": {
+                    "protocol": "OBR-v1.0",
                     "last_pulse": new Date().toISOString().split('T')[0],
                     "whatsapp": document.getElementById('bizWA').value,
                     "status": "active"

@@ -1,0 +1,74 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://openbusinessrecord.org/spec/obr-v1.0.json",
+    "title": "Open Business Record (OBR) v1.0",
+    "description": "JSON-LD spec for OBR. Extends Schema.org LocalBusiness and adds obr_metadata.",
+    "type": "object",
+    "required": ["@type", "name", "address", "telephone", "obr_metadata"],
+    "properties": {
+      "@context": {
+        "const": "https://schema.org",
+        "description": "Derived from where the file is hosted; not supplied by the record author."
+      },
+      "@type": {
+        "type": "string",
+        "description": "Schema.org type (e.g. LocalBusiness, Restaurant, Store).",
+        "examples": ["LocalBusiness", "Restaurant", "Store", "ProfessionalService"]
+      },
+      "name": {
+        "type": "string",
+        "description": "Official business name."
+      },
+      "address": {
+        "type": "string",
+        "description": "Physical location."
+      },
+      "url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Canonical URL for the listing (directory or business site)."
+      },
+      "telephone": {
+        "type": "string",
+        "description": "Public phone number."
+      },
+      "email": {
+        "type": "string",
+        "format": "email",
+        "description": "Public email."
+      },
+      "obr_metadata": {
+        "type": "object",
+        "required": ["protocol", "last_pulse", "hosting", "status"],
+        "description": "OBR-specific metadata.",
+        "properties": {
+          "protocol": {
+            "const": "OBR-v1.0",
+            "description": "OBR protocol version."
+          },
+          "last_pulse": {
+            "type": "string",
+            "format": "date",
+            "description": "ISO-8601 date; must be < 365 days old for active listing."
+          },
+          "hosting": {
+            "type": "string",
+            "enum": ["registry", "self-hosted"],
+            "description": "Where the record is served from."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "hibernated"],
+            "description": "Listing status."
+          },
+          "whatsapp": {
+            "type": "string",
+            "description": "WhatsApp number for direct-to-customer messaging."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": true
+  }
+  

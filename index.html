@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Business Record | The Ledger for Local Commerce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .gradient-text { background: linear-gradient(90deg, #0052ff, #00a3ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .pulse-dot { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <nav class="max-w-6xl mx-auto px-6 py-6 flex justify-between items-center">
+        <div class="flex items-center gap-2 font-bold text-xl tracking-tight">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs">OBR</div>
+            <span>Open Business Record</span>
+        </div>
+        <div class="hidden md:flex gap-8 text-sm font-medium text-slate-600">
+            <a href="#problem" class="hover:text-blue-600">Problem</a>
+            <a href="docs/obr-spec.json" class="hover:text-blue-600">The Spec</a>
+            <a href="https://github.com" class="hover:text-blue-600">GitHub</a>
+        </div>
+        <a href="/generator" class="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-blue-700 transition">Get Verified</a>
+    </nav>
+
+    <header class="max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
+        <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold mb-6">
+            <span class="w-2 h-2 bg-blue-600 rounded-full pulse-dot"></span>
+            v1.0 Protocol is Live
+        </div>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
+            The Internet’s <span class="gradient-text">Verified Ledger</span> for Local Commerce.
+        </h1>
+        <p class="text-xl text-slate-600 mb-10 leading-relaxed">
+            Global business data is decaying. We built a decentralized, self-correcting protocol to fix it. No ads. No gatekeepers. Just the facts.
+        </p>
+        <div class="flex flex-col md:flex-row justify-center gap-4">
+            <a href="/generator" class="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold text-lg hover:scale-105 transition shadow-lg">Register Your Business</a>
+            <a href="docs/obr-spec.json" class="bg-white border border-slate-200 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition">Read the Spec</a>
+        </div>
+    </header>
+
+    <section id="problem" class="max-w-6xl mx-auto px-6 py-20">
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+                <h2 class="text-3xl font-bold mb-6">Why OBR?</h2>
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="text-blue-600 font-bold text-xl">01</div>
+                        <p class="text-slate-600"><strong>Google & Yelp are silos.</strong> Their data is closed, pay-to-play, and often months out of date.</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="text-blue-600 font-bold text-xl">02</div>
+                        <p class="text-slate-600"><strong>The Pulse.</strong> Records expire automatically after 365 days. If it’s in the OBR, the lights are on.</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="text-blue-600 font-bold text-xl">03</div>
+                        <p class="text-slate-600"><strong>AI-Native.</strong> Zero-UI, machine-readable records designed for LLMs, not ad-clicks.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-900 rounded-2xl p-8 text-blue-400 font-mono text-sm shadow-2xl overflow-hidden">
+                <p class="text-slate-500 mb-4">// obr.json sample</p>
+                <p><span class="text-pink-400">"@type"</span>: <span class="text-emerald-400">"Restaurant"</span>,</p>
+                <p><span class="text-pink-400">"name"</span>: <span class="text-emerald-400">"Stone's Pizza"</span>,</p>
+                <p><span class="text-pink-400">"url"</span>: <span class="text-emerald-400">"stonespizza.com"</span>,</p>
+                <p><span class="text-pink-400">"obr_metadata"</span>: {</p>
+                <p class="pl-4"><span class="text-pink-400">"last_pulse"</span>: <span class="text-emerald-400">"2026-02-01"</span>,</p>
+                <p class="pl-4"><span class="text-pink-400">"protocol"</span>: <span class="text-emerald-400">"OBR-v1.0"</span></p>
+                <p>}</p>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <section class="bg-blue-600 py-12">
+        <div class="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
+            <div>
+                <div class="text-3xl font-bold">1,240</div>
+                <div class="text-blue-200 text-sm">Active

@@ -1,0 +1,61 @@
+// api/save-record.js
+import { Octokit } from "@octokit/rest";
+
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+const OWNER = 'openbusinessrecord';
+const REPO = 'openbusinessrecord';
+
+export default async function handler(req, res) {
+
+    res.setHeader('Access-Control-Allow-Origin', 'https://yourname.github.io');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
+
+  const record = req.body;
+  const slug = record.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  const fileName = `${slug}.json`;
+  const branchName = `submission-${slug}-${Date.now()}`;
+
+  try {
+    // 1. Get the SHA of the latest commit on 'main' to branch off from
+    const mainBranch = await octokit.repos.getBranch({ owner: OWNER, repo: REPO, branch: 'main' });
+    const mainSha = mainBranch.data.commit.sha;
+
+    // 2. Create a new branch
+    await octokit.git.createRef({
+      owner: OWNER, repo: REPO,
+      ref: `refs/heads/${branchName}`,
+      sha: mainSha
+    });
+
+    // 3. Commit the file to the NEW branch
+    const content = Buffer.from(JSON.stringify(record, null, 2)).toString('base64');
+    await octokit.repos.createOrUpdateFileContents({
+      owner: OWNER, repo: REPO,
+      path: `records/${fileName}`,
+      message: `OBR Submission: ${record.name}`,
+      content: content,
+      branch: branchName
+    });
+
+    // 4. Open a Pull Request
+    const pr = await octokit.pulls.create({
+      owner: OWNER, repo: REPO,
+      title: `🚨 New OBR Record: ${record.name}`,
+      head: branchName,
+      base: 'main',
+      body: `Reviewing new business registration for **${record.name}**.\n\n[Check Website](${record.url})`
+    });
+
+    return res.status(200).json({ success: true, pr_url: pr.data.html_url });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "System failed to create submission." });
+  }
+}
