@@ -7,37 +7,96 @@
         body { font-family: sans-serif; max-width: 500px; margin: 50px auto; line-height: 1.6; }
         .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; box-shadow: 2px 2px 10px #eee; }
         input, select { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ddd; }
-        button { background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; width: 100%; font-weight: bold; }
-        button:hover { background: #0056b3; }
+        .actions { display: flex; gap: 10px; margin: 16px 0; }
+        .actions { flex-wrap: wrap; }
+        .actions button { flex: 1; min-width: 140px; padding: 10px 16px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-generate { background: #334155; color: white; width: 100%; }
+        .btn-generate:hover { background: #1e293b; }
+        .step2-actions { display: none; margin-top: 0; }
+        .btn-download { background: #e2e8f0; color: #334155; }
+        .btn-download:hover { background: #cbd5e1; }
+        .btn-host { background: #007bff; color: white; }
+        .btn-host:hover { background: #0056b3; }
         pre { background: #f4f4f4; padding: 10px; font-size: 12px; overflow-x: auto; display: none; }
+        .preview-title { display: none; margin-top: 16px; }
+        #hostStatus { font-size: 13px; margin-top: 8px; display: none; }
+        .field-error { border-color: #b91c1c !important; background: #fef2f2; }
+        #validationErrors { display: none; margin-bottom: 12px; padding: 10px 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; color: #b91c1c; font-size: 14px; }
+        #validationErrors ul { margin: 0; padding-left: 20px; }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>OBR Business Card</h2>
-        <p><small>Fill this out to generate your <b>business.json</b> file.</small></p>
+        <p><small>Fill this out to generate your <b>business.json</b>.</small></p>
         
-        <input type="text" id="bizName" placeholder="Business Name (e.g. Stone's Pizza)" required>
+        <div id="validationErrors" role="alert"></div>
+        
+        <input type="text" id="bizName" placeholder="Business Name (e.g. Stone's Pizza)" aria-required="true">
         <select id="bizType">
             <option value="LocalBusiness">General Business</option>
             <option value="Restaurant">Restaurant</option>
             <option value="ProfessionalService">Home Service / Contractor</option>
             <option value="Store">Retail Store</option>
         </select>
-        <input type="text" id="bizAddress" placeholder="Physical Address (City, State, Zip)">
-        <input type="tel" id="bizPhone" placeholder="Public Phone Number">
+        <input type="text" id="bizAddress" placeholder="Physical Address (City, State, Zip)" aria-required="true">
+        <input type="tel" id="bizPhone" placeholder="Public Phone Number" aria-required="true">
         <input type="tel" id="bizWA" placeholder="WhatsApp Number (for direct chat)">
         <input type="email" id="bizEmail" placeholder="Public Email">
         
-        <button onclick="generateJSON()">Generate & Download business.json</button>
+        <div class="actions">
+            <button type="button" class="btn-generate" onclick="generatePreview()">Generate preview</button>
+        </div>
+        <p id="hostStatus"></p>
         
-        <h3 id="previewTitle" style="display:none;">Code Preview:</h3>
+        <h3 id="previewTitle" class="preview-title">Preview</h3>
         <pre id="jsonPreview"></pre>
+        
+        <div id="step2Actions" class="actions step2-actions">
+            <button type="button" class="btn-download" onclick="downloadRecord()">Download</button>
+            <button type="button" class="btn-host" onclick="hostRecord()">I don’t have a website — Host on OBR</button>
+        </div>
     </div>
 
     <script>
-        function generateJSON() {
-            const data = {
+        var REQUIRED = { bizName: 'Business name', bizAddress: 'Address', bizPhone: 'Phone number' };
+        var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        function validateForm() {
+            var errors = [];
+            var name = (document.getElementById('bizName').value || '').trim();
+            var address = (document.getElementById('bizAddress').value || '').trim();
+            var phone = (document.getElementById('bizPhone').value || '').trim();
+            var email = (document.getElementById('bizEmail').value || '').trim();
+
+            if (!name) errors.push({ id: 'bizName', msg: 'Please enter your business name.' });
+            if (!address) errors.push({ id: 'bizAddress', msg: 'Please enter your business address.' });
+            if (!phone) errors.push({ id: 'bizPhone', msg: 'Please enter a phone number.' });
+            else if (!/[\d\s\-+()]{7,}/.test(phone)) errors.push({ id: 'bizPhone', msg: 'Please enter a valid phone number (at least 7 digits).' });
+            if (email && !EMAIL_REGEX.test(email)) errors.push({ id: 'bizEmail', msg: 'Please enter a valid email address.' });
+
+            return errors.length ? { valid: false, errors: errors } : { valid: true };
+        }
+
+        function showValidationErrors(errors) {
+            var ids = ['bizName', 'bizAddress', 'bizPhone', 'bizEmail'];
+            ids.forEach(function(id) { document.getElementById(id).classList.remove('field-error'); });
+            var errEl = document.getElementById('validationErrors');
+            errEl.innerHTML = '<strong>Please fix the following:</strong><ul>' + errors.map(function(e) { return '<li>' + e.msg + '</li>'; }).join('') + '</ul>';
+            errEl.style.display = 'block';
+            errors.forEach(function(e) { document.getElementById(e.id).classList.add('field-error'); });
+            document.getElementById(errors[0].id).focus();
+        }
+
+        function clearValidationErrors() {
+            ['bizName', 'bizAddress', 'bizPhone', 'bizEmail'].forEach(function(id) { document.getElementById(id).classList.remove('field-error'); });
+            var errEl = document.getElementById('validationErrors');
+            errEl.style.display = 'none';
+            errEl.innerHTML = '';
+        }
+
+        function buildRecord(hosting) {
+            return {
                 "@context": "https://schema.org",
                 "@type": document.getElementById('bizType').value,
                 "name": document.getElementById('bizName').value,
@@ -47,25 +106,75 @@
                 "obr_metadata": {
                     "protocol": "OBR-v1.0",
                     "last_pulse": new Date().toISOString().split('T')[0],
+                    "hosting": hosting,
                     "whatsapp": document.getElementById('bizWA').value,
                     "status": "active"
                 }
             };
+        }
 
-            const jsonStr = JSON.stringify(data, null, 2);
+        var generatedRecord = null;
+
+        function showPreview(data) {
+            var jsonStr = JSON.stringify(data, null, 2);
             document.getElementById('jsonPreview').innerText = jsonStr;
             document.getElementById('jsonPreview').style.display = 'block';
             document.getElementById('previewTitle').style.display = 'block';
+            return jsonStr;
+        }
 
-            // Automatic Download
-            const blob = new Blob([jsonStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
+        function generatePreview() {
+            var result = validateForm();
+            if (!result.valid) { showValidationErrors(result.errors); return; }
+            clearValidationErrors();
+            generatedRecord = buildRecord("self-hosted");
+            showPreview(generatedRecord);
+            document.getElementById('step2Actions').style.display = 'flex';
+            document.getElementById('hostStatus').style.display = 'none';
+            document.getElementById('hostStatus').innerHTML = '';
+        }
+
+        function downloadRecord() {
+            if (!generatedRecord) return;
+            var jsonStr = JSON.stringify(generatedRecord, null, 2);
+            var blob = new Blob([jsonStr], { type: "application/json" });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
             a.href = url;
             a.download = "business.json";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        async function hostRecord() {
+            if (!generatedRecord) return;
+            var recordForHost = JSON.parse(JSON.stringify(generatedRecord));
+            recordForHost.obr_metadata.hosting = "registry";
+            var jsonStr = JSON.stringify(recordForHost, null, 2);
+            var statusEl = document.getElementById('hostStatus');
+            statusEl.style.display = 'block';
+            statusEl.textContent = 'Submitting…';
+            statusEl.style.color = '#64748b';
+            try {
+                var res = await fetch('/api/save-record', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: jsonStr
+                });
+                var result = await res.json();
+                if (result.success) {
+                    statusEl.innerHTML = 'Submitted. <a href="' + result.pr_url + '" target="_blank" rel="noopener">View submission</a>';
+                    statusEl.style.color = '#15803d';
+                } else {
+                    statusEl.textContent = 'Submission failed. Download the JSON above and try again later.';
+                    statusEl.style.color = '#b91c1c';
+                }
+            } catch (e) {
+                statusEl.textContent = 'Hosting API unavailable. Download the JSON above to self-host.';
+                statusEl.style.color = '#b91c1c';
+            }
         }
     </script>
 </body>
