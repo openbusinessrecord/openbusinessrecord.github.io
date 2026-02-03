@@ -51,13 +51,6 @@
             return div.innerHTML;
         }
 
-        function decodeValue(enc) {
-            if (!enc) return '';
-            try {
-                return decodeURIComponent(escape(atob(enc)));
-            } catch (e) { return ''; }
-        }
-
         async function loadDirectory() {
             const container = document.getElementById('directory-grid');
             const statusEl = document.getElementById('directory-status');
@@ -88,30 +81,23 @@
                         const email = business.email || '';
                         const whatsapp = (business.obr_metadata && business.obr_metadata.whatsapp) ? business.obr_metadata.whatsapp : '';
                         const lastPulse = business.obr_metadata && business.obr_metadata.last_pulse ? business.obr_metadata.last_pulse : '—';
-                        var telEnc = '', emailEnc = '', waEnc = '';
-                        try {
-                            telEnc = telephone ? btoa(unescape(encodeURIComponent(telephone))) : '';
-                            emailEnc = email ? btoa(unescape(encodeURIComponent(email))) : '';
-                            waEnc = whatsapp ? btoa(unescape(encodeURIComponent(whatsapp))) : '';
-                        } catch (e) {}
                         const card = document.createElement('div');
                         card.className = 'directory-card';
                         card.innerHTML = `
                             <h3>${escapeHtml(name)}</h3>
                             ${url ? '<p class="mb-2">' + escapeHtml(url) + '</p>' : ''}
-                            ${telephone ? '<div class="contact-row"><span class="label">Phone</span><span class="value"></span><button type="button" class="reveal-btn" data-enc="${escapeHtml(telEnc)}" data-kind="tel">Show</button></div>' : ''}
-                            ${email ? '<div class="contact-row"><span class="label">Email</span><span class="value"></span><button type="button" class="reveal-btn" data-enc="${escapeHtml(emailEnc)}" data-kind="email">Show</button></div>' : ''}
-                            ${whatsapp ? '<div class="contact-row"><span class="label">WhatsApp</span><span class="value"></span><button type="button" class="reveal-btn" data-enc="${escapeHtml(waEnc)}" data-kind="wa">Show</button></div>' : ''}
+                            ${telephone ? '<div class="contact-row"><span class="label">Phone</span><span class="value"></span><button type="button" class="reveal-btn" data-kind="tel">Show</button></div>' : ''}
+                            ${email ? '<div class="contact-row"><span class="label">Email</span><span class="value"></span><button type="button" class="reveal-btn" data-kind="email">Show</button></div>' : ''}
+                            ${whatsapp ? '<div class="contact-row"><span class="label">WhatsApp</span><span class="value"></span><button type="button" class="reveal-btn" data-kind="wa">Show</button></div>' : ''}
                             <span class="badge">Verified Pulse: ${escapeHtml(lastPulse)}</span>
                         `;
                         card.querySelectorAll('.reveal-btn').forEach(function(btn) {
+                            const kind = btn.getAttribute('data-kind');
+                            const value = (kind === 'tel' ? telephone : (kind === 'email' ? email : whatsapp)) || '';
+                            if (!value) return;
                             btn.addEventListener('click', function() {
-                                var enc = btn.getAttribute('data-enc');
-                                var kind = btn.getAttribute('data-kind');
-                                var value = decodeValue(enc);
-                                if (!value) return;
-                                var row = btn.closest('.contact-row');
-                                var valueSpan = row ? row.querySelector('.value') : null;
+                                const row = btn.closest('.contact-row');
+                                const valueSpan = row ? row.querySelector('.value') : null;
                                 if (!valueSpan) return;
                                 if (kind === 'tel') {
                                     valueSpan.innerHTML = '<a href="tel:' + value.replace(/[^\d+]/g, '') + '">' + escapeHtml(value) + '</a>';

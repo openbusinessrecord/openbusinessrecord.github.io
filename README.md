@@ -12,7 +12,7 @@ Small business data is broken. It is trapped behind walled gardens like Google, 
 
 OBR is more than a file format; it is a decentralized discovery loop that ensures businesses own their **Source of Truth**. The ecosystem consists of four integrated pillars:
 
-- **The Standard (business.json)** — A lightweight JSON-LD file leveraging Schema.org with a mandatory "Annual Pulse" to ensure data is active.
+- **The Standard (obr-business.json)** — A lightweight JSON-LD file leveraging Schema.org with a mandatory "Annual Pulse" to ensure data is active.
 - **The 60-Second Form** — A dead-simple generator that turns basic business info into a valid OBR record.
 - **Managed Hosting** — A home for businesses without their own websites, providing a permanent URL and a clean, indexable profile.
 - **The Reference Scraper** — An open-source tool for developers to build high-speed, ad-free local directories without paying for expensive API keys.
@@ -24,7 +24,7 @@ OBR is more than a file format; it is a decentralized discovery loop that ensure
 | Component | Role |
 |-----------|------|
 | **The Form** | Owners use the web generator to create their record in under a minute. |
-| **The Hosting** | Records are hosted at the root of a domain (e.g. `stonespizza.com/business.json`) or on our managed registry. |
+| **The Hosting** | Records are hosted at `<your domain>/.well-known/obr-business.json` or on our managed registry. |
 | **The Pulse** | Every 365 days, owners update the `last_pulse` timestamp to remain "Active". |
 | **The Index** | Smart scrapers verify index these clean JSON files to build a local, regional, or even, global index. |
 
@@ -86,13 +86,13 @@ OBR records are **JSON-LD**. The standard extends [Schema.org/LocalBusiness](htt
 
 - **Direct-to-Customer** — By emphasizing `whatsapp` in the metadata, you move conversations to platforms with superior built-in spam blocking.
 - **Zero-Config Hosting** — No website? Use our registry to get a verified digital presence in 60 seconds.
-- **Control** — You own the `business.json` file. If you make updates, scrapers will automatically pick up the changes.
+- **Control** — You own the `obr-business.json` file. If you make updates, scrapers will automatically pick up the changes.
 
 ### Why This Protects the Owner
 
 By making the file transparent and easy to parse, you protect the owner from the aggressive "brute-force" scraping common today.
 
-- **Efficiency** — A good bot finds `business.json` via `robots.txt`, gets the facts, and leaves.
+- **Efficiency** — A good bot finds `/.well-known/obr-business.json` via `robots.txt`, gets the facts, and leaves.
 - **Reduced Noise** — No full-site crawl; less server load, fewer accidental security blocks.
 
 ---
@@ -101,6 +101,6 @@ By making the file transparent and easy to parse, you protect the owner from the
 
 | Resource | Description |
 |----------|--------------|
-| [**Create Your Record**](docs/how-it-works.html) | Use the 60-second form to generate and host your `business.json`. |
+| [**Create Your Record**](docs/how-it-works.html) | Use the 60-second form to generate and host your `obr-business.json`. |
 | [**Reference Scraper**](src/scraper.js) | Download the Node.js tool to start indexing OBR data. |
 | [**Browse the Directory**](index.html#directory) | See the first OBR-compliant local index in action. |

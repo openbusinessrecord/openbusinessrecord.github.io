@@ -16,6 +16,9 @@
         pre { background: #f4f4f4; padding: 10px; font-size: 12px; overflow-x: auto; display: none; }
         .preview-title { display: none; margin-top: 16px; }
         #hostStatus { font-size: 13px; margin-top: 8px; display: none; }
+        #downloadInstructions { font-size: 13px; margin-top: 12px; padding: 12px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; color: #0c4a6e; display: none; }
+        .instructions { font-size: 13px; color: #64748b; margin-top: 12px; }
+        .instructions strong { color: #334155; }
         .field-error { border-color: #b91c1c !important; background: #fef2f2; }
         #validationErrors { display: none; margin-bottom: 12px; padding: 10px 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; color: #b91c1c; font-size: 14px; }
         #validationErrors ul { margin: 0; padding-left: 20px; }
@@ -24,7 +27,7 @@
 <body>
     <div class="card">
         <h2>OBR Business Card</h2>
-        <p><small>Fill this out to generate your <b>business.json</b>.</small></p>
+        <p><small>Fill this out to generate your <b>obr-business.json</b>.</small></p>
         
         <div id="validationErrors" role="alert"></div>
         
@@ -44,7 +47,10 @@
             <button type="button" class="btn-download" onclick="generateAndDownload()">Generate &amp; Download</button>
             <button type="button" class="btn-host" onclick="generateAndHost()">I don’t have a website — Host on OBR</button>
         </div>
+        <p class="instructions"><strong>Download:</strong> Upload <code>obr-business.json</code> to your website at <code>&lt;your domain&gt;/.well-known/obr-business.json</code>. Our scraper will pick up your listing later.</p>
+        <p class="instructions"><strong>Host on OBR:</strong> Your business listing will appear in the directory after we review your submission.</p>
         <p id="hostStatus"></p>
+        <div id="downloadInstructions"></div>
         
         <h3 id="previewTitle" class="preview-title">Preview</h3>
         <pre id="jsonPreview"></pre>
@@ -126,7 +132,7 @@
             var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
             a.href = url;
-            a.download = "business.json";
+            a.download = "obr-business.json";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -151,7 +157,7 @@
                 });
                 var result = await res.json();
                 if (result.success) {
-                    statusEl.innerHTML = 'Submitted. <a href="' + result.pr_url + '" target="_blank" rel="noopener">View submission</a>';
+                    statusEl.innerHTML = 'Submitted. Your business listing will appear in the directory after we review it. <a href="' + result.pr_url + '" target="_blank" rel="noopener">View submission</a>';
                     statusEl.style.color = '#15803d';
                 } else {
                     statusEl.textContent = 'Submission failed. Download the JSON above and try again later.';

@@ -7,7 +7,7 @@ const USER_AGENT = 'NoNonsenseDirectoryBot/1.0';
 async function syncBusiness(domain) {
     const rootUrl = `https://${domain}`;
     const robotsUrl = `${rootUrl}/robots.txt`;
-    const bizFileUrl = `${rootUrl}/business.json`;
+    const bizFileUrl = `${rootUrl}/obr-business.json`;
 
     try {
         // 2. Respect Robots.txt
@@ -25,7 +25,7 @@ async function syncBusiness(domain) {
         console.log(`🕒 Waiting ${delay}s to respect site rules...`);
         await new Promise(r => setTimeout(r, delay * 1000));
 
-        // 4. Fetch the business.json
+        // 4. Fetch the obr-business.json
         const response = await fetch(bizFileUrl);
         if (response.status === 200) {
             const data = await response.json();
@@ -42,7 +42,7 @@ async function syncBusiness(domain) {
                 console.log(`⚠️ Listing for ${data.name} is stale. Needs a Pulse.`);
             }
         } else {
-            console.log(`🔍 No business.json found at ${domain}`);
+            console.log(`🔍 No obr-business.json found at ${domain}`);
         }
     } catch (error) {
         console.error(`🚨 Error connecting to ${domain}:`, error.message);
