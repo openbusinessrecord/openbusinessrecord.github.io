@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works | Open Business Record</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .gradient-text { background: linear-gradient(90deg, #0052ff, #00a3ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="text-slate-900">
+    <nav class="max-w-4xl mx-auto px-6 py-6 flex justify-between items-center border-b border-slate-200">
+        <a href="../index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight text-slate-900">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs">OBR</div>
+            <span>Open Business Record</span>
+        </a>
+        <div class="flex gap-6 text-sm font-medium text-slate-600">
+            <a href="../index.html#problem" class="hover:text-blue-600">Problem</a>
+            <a href="obr-spec.json" class="hover:text-blue-600">JSON Spec</a>
+            <a href="../src/generator-form.html" class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-700 transition">Get Verified</a>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 py-16">
+        <h1 class="text-4xl font-extrabold tracking-tight mb-2">How It Works</h1>
+        <p class="text-slate-600 mb-12">The &quot;No-Nonsense&quot; standard for local business data.</p>
+
+        <section class="mb-14">
+            <h2 class="text-2xl font-bold mb-4">The Problem</h2>
+            <p class="text-slate-600 leading-relaxed">
+                Small business data is broken. It is trapped behind walled gardens (Google, Yelp, Facebook), filled with &quot;zombie listings&quot; for closed shops, and manipulated by advertising spend. For AI agents and modern developers, scraping this data is a nightmare of broken HTML and outdated information.
+            </p>
+        </section>
+
+        <section class="mb-14">
+            <h2 class="text-2xl font-bold mb-4">The Solution</h2>
+            <p class="text-slate-600 leading-relaxed">
+                OBR is an open, lightweight metadata standard that allows businesses to own their <strong>Source of Truth</strong>. It leverages the existing Schema.org vocabulary and adds a mandatory <strong>Annual Pulse</strong>—ensuring that every listing in an OBR-compliant directory is verified and active.
+            </p>
+        </section>
+
+        <section class="mb-14">
+            <h2 class="text-2xl font-bold mb-6">Decentralized Discovery</h2>
+            <p class="text-slate-600 mb-6">OBR operates on a simple, four-step model.</p>
+            <ul class="space-y-6">
+                <li class="flex gap-4">
+                    <span class="flex-shrink-0 w-10 h-10 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold">1</span>
+                    <div>
+                        <strong class="text-slate-900">The Card</strong>
+                        <p class="text-slate-600 mt-1">Businesses generate a <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sm">business.json</code> file (JSON-LD).</p>
+                    </div>
+                </li>
+                <li class="flex gap-4">
+                    <span class="flex-shrink-0 w-10 h-10 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold">2</span>
+                    <div>
+                        <strong class="text-slate-900">The Anchor</strong>
+                        <p class="text-slate-600 mt-1">The file is hosted at the root of their domain (e.g. <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sm">stonespizza.com/business.json</code>) or a community node.</p>
+                    </div>
+                </li>
+                <li class="flex gap-4">
+                    <span class="flex-shrink-0 w-10 h-10 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold">3</span>
+                    <div>
+                        <strong class="text-slate-900">The Pulse</strong>
+                        <p class="text-slate-600 mt-1">We use a smart scraper to detect whether the business is still active.</p>
+                    </div>
+                </li>
+                <li class="flex gap-4">
+                    <span class="flex-shrink-0 w-10 h-10 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold">4</span>
+                    <div>
+                        <strong class="text-slate-900">The Index</strong>
+                        <p class="text-slate-600 mt-1">After a year of inactivity, we request an update. If we don&apos;t hear back, the listing expires.</p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <section class="mb-14">
+            <h2 class="text-2xl font-bold mb-4">Why Developers Love It</h2>
+            <ul class="list-disc list-inside text-slate-600 space-y-2">
+                <li><strong>No API Keys</strong> — Access local data without paying a &quot;Google Maps Tax&quot;</li>
+                <li><strong>LLM-Ready</strong> — Clean JSON is the native language of AI agents</li>
+                <li><strong>Low Overhead</strong> — 1,000,000 business listings occupy less than 500MB of storage</li>
+            </ul>
+        </section>
+
+        <section class="mb-14">
+            <h2 class="text-2xl font-bold mb-4">Anti-Spam & Trust</h2>
+            <ul class="list-disc list-inside text-slate-600 space-y-2">
+                <li><strong>Domain Verification</strong> — Only files hosted on a TLD (top-level domain) can receive a &quot;Gold&quot; trust badge</li>
+                <li><strong>Crawler Ethics</strong> — OBR scrapers MUST respect <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sm">robots.txt</code> and include a <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sm">Crawl-Delay</code></li>
+            </ul>
+        </section>
+
+        <section class="p-6 bg-slate-50 border border-slate-200 rounded-xl">
+            <h2 class="text-xl font-bold mb-2">Technical spec</h2>
+            <p class="text-slate-600 mb-4">OBR records are JSON-LD and extend Schema.org (e.g. LocalBusiness, Restaurant, Store) with an <code class="bg-slate-200 px-1.5 py-0.5 rounded text-sm">obr_metadata</code> block. Required and recommended fields are defined in the machine-readable schema.</p>
+            <a href="obr-spec.json" class="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-700">
+                View JSON spec (obr-spec.json)
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+        </section>
+
+        <p class="mt-12 text-center">
+            <a href="../index.html" class="text-slate-500 hover:text-slate-700 text-sm">← Back to home</a>
+        </p>
+    </main>
+</body>
+</html>

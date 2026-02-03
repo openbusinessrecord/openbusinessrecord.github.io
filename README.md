@@ -1,37 +1,40 @@
 # Open Business Record (OBR) v1.0
 
-**The "No-Nonsense" standard for local business data.**
+**The "No-Nonsense" ecosystem for local business data.**
 
 ---
 
 ## The Problem
 
-Small business data is broken. It is trapped behind walled gardens (Google, Yelp, Facebook), filled with "zombie listings" for closed shops, and manipulated by advertising spend. For AI agents and modern developers, scraping this data is a nightmare of broken HTML and outdated information.
+Small business data is broken. It is trapped behind walled gardens like Google, Yelp, and Facebook, filled with "zombie listings" for closed shops, and manipulated by advertising spend. For AI agents and developers, scraping this data is a nightmare of broken HTML and outdated information.
 
-## The Solution
+## The Solution: A Complete Ecosystem
 
-OBR is an open, lightweight metadata standard that allows businesses to own their **Source of Truth**. It leverages the existing Schema.org vocabulary and adds a mandatory **Annual Pulse**—ensuring that every listing in an OBR-compliant directory is verified and active.
+OBR is more than a file format; it is a decentralized discovery loop that ensures businesses own their **Source of Truth**. The ecosystem consists of four integrated pillars:
+
+- **The Standard (business.json)** — A lightweight JSON-LD file leveraging Schema.org with a mandatory "Annual Pulse" to ensure data is active.
+- **The 60-Second Form** — A dead-simple generator that turns basic business info into a valid OBR record.
+- **Managed Hosting** — A home for businesses without their own websites, providing a permanent URL and a clean, indexable profile.
+- **The Reference Scraper** — An open-source tool for developers to build high-speed, ad-free local directories without paying for expensive API keys.
 
 ---
 
 ## How It Works
 
-OBR operates on a **Decentralized Discovery** model.
-
-| Step | Description |
-|------|-------------|
-| **The Card** | Businesses generate a `business.json` file (JSON-LD). |
-| **The Anchor** | The file is hosted at the root of their domain (e.g., `stonespizza.com/business.json`) or a community node. |
-| **The Pulse** | Every 365 days, the owner updates the `last_pulse` timestamp. |
-| **The Index** | Scrapers (respecting `robots.txt`) index these files to build ad-free, high-speed local directories. |
+| Component | Role |
+|-----------|------|
+| **The Form** | Owners use the web generator to create their record in under a minute. |
+| **The Hosting** | Records are hosted at the root of a domain (e.g. `stonespizza.com/business.json`) or on our managed registry. |
+| **The Pulse** | Every 365 days, owners update the `last_pulse` timestamp to remain "Active". |
+| **The Index** | Smart scrapers verify index these clean JSON files to build a local, regional, or even, global index. |
 
 ---
 
 ## The Spec (v1.0)
 
-OBR records are **JSON-LD**. The standard extends [Schema.org/LocalBusiness](https://schema.org/LocalBusiness) (and subtypes such as `Restaurant`, `Store`, etc.) and adds an `obr_metadata` block.
+OBR records are **JSON-LD**. The standard extends [Schema.org/LocalBusiness](https://schema.org/LocalBusiness) and adds an `obr_metadata` block.
 
-### Example
+### Example Record
 
 ```json
 {
@@ -54,44 +57,50 @@ OBR records are **JSON-LD**. The standard extends [Schema.org/LocalBusiness](htt
 
 ### Required Fields
 
-- **`@context`** — `"https://schema.org"`
-- **`@type`** — Schema.org type (e.g. `LocalBusiness`, `Restaurant`, `Store`)
-- **`name`** — Official business name
-- **`address`** — Physical location
-- **`telephone`** — Public phone number
+- **`@context`** — Must be `"https://schema.org"`.
+- **`@type`** — Valid Schema.org type (e.g. `LocalBusiness`, `Store`).
+- **`name`** — Official business name.
+- **`address`** — Physical location.
+- **`telephone`** — Public phone number.
 - **`obr_metadata`**
-  - **`protocol`** — `"OBR-v1.0"`
-  - **`last_pulse`** — ISO-8601 date (must be &lt; 365 days old)
-  - **`hosting`** — `"registry"` \| `"self-hosted"` (where the record is served from)
-  - **`status`** — `"active"` \| `"hibernated"`
-
-### Recommended Fields
-
-- **`url`** — Canonical URL for the listing (e.g. directory or business site)
-- **`email`** — Public email (handle via obfuscation on the frontend)
-- **`obr_metadata.whatsapp`** — For direct-to-customer messaging without intermediary apps
+  - **`protocol`** — `"OBR-v1.0"`.
+  - **`last_pulse`** — ISO-8601 date (must be less than 365 days old).
+  - **`hosting`** — `"registry"` (for hosted listings) or `"self-hosted"`.
+  - **`status`** — `"active"` or `"hibernated"`.
 
 ---
 
-## Why Developers Love It
+## Why Developers & Owners Love It
 
-- **No API Keys** — Access local data without paying a "Google Maps Tax"
-- **LLM-Ready** — Clean JSON is the native language of AI agents
-- **Low Overhead** — 1,000,000 business listings occupy less than 500MB of storage
+- **No API Keys** — Access local data without paying a "Google Maps Tax".
+- **LLM-Ready** — Clean JSON is the native language of AI agents and modern scrapers.
+- **Verified Activity** - OBR scrapers are smart enough to use the last_pulse timestamp and cross-verification techniques to ensure every indexed business is currently active.
+- **Zero-Config for Owners** — No website? No problem. Use our free hosting to get a verified digital presence.
+- **Anti-Spam** — Domain verification ensures only legitimate businesses receive "Gold" trust badges.
 
 ---
 
-## Anti-Spam & Trust
+## Why It's Better (and Safer)
 
-- **Domain Verification** — Only files hosted on a TLD (top-level domain) can receive a "Gold" trust badge
-- **Crawler Ethics** — OBR scrapers MUST respect `robots.txt` and include a `Crawl-Delay`
+### For Owners: Transparency > Obscurity
+
+- **Direct-to-Customer** — By emphasizing `whatsapp` in the metadata, you move conversations to platforms with superior built-in spam blocking.
+- **Zero-Config Hosting** — No website? Use our registry to get a verified digital presence in 60 seconds.
+- **Control** — You own the `business.json` file. If you make updates, scrapers will automatically pick up the changes.
+
+### Why This Protects the Owner
+
+By making the file transparent and easy to parse, you protect the owner from the aggressive "brute-force" scraping common today.
+
+- **Efficiency** — A good bot finds `business.json` via `robots.txt`, gets the facts, and leaves.
+- **Reduced Noise** — No full-site crawl; less server load, fewer accidental security blocks.
 
 ---
 
 ## Get Started
 
 | Resource | Description |
-|----------|-------------|
-| [**Generator**](docs/index.html) | Use our web form to create your `business.json` |
-| [**Scraper**](#) | Download our Node.js reference scraper |
-| [**Directory**](#) | View the first OBR-compliant local index |
+|----------|--------------|
+| [**Create Your Record**](docs/how-it-works.html) | Use the 60-second form to generate and host your `business.json`. |
+| [**Reference Scraper**](src/scraper.js) | Download the Node.js tool to start indexing OBR data. |
+| [**Browse the Directory**](index.html#directory) | See the first OBR-compliant local index in action. |

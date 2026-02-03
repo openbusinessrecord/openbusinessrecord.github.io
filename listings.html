@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verified Businesses | Open Business Record</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        #directory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+        .directory-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .directory-card h3 { font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0; color: #1e293b; }
+        .directory-card p { font-size: 0.875rem; color: #64748b; margin: 0 0 0.5rem 0; }
+        .directory-card .badge { display: inline-block; font-size: 0.75rem; color: #0369a1; background: #e0f2fe; padding: 0.25rem 0.5rem; border-radius: 6px; margin-top: 0.5rem; }
+        .directory-card .contact-row { font-size: 0.875rem; color: #64748b; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .directory-card .contact-row .label { min-width: 4rem; }
+        .directory-card .reveal-btn { font-size: 0.75rem; color: #0369a1; background: none; border: 1px solid #bae6fd; border-radius: 4px; padding: 0.2rem 0.5rem; cursor: pointer; }
+        .directory-card .reveal-btn:hover { background: #e0f2fe; }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <nav class="max-w-6xl mx-auto px-6 py-6 flex justify-between items-center border-b border-slate-200">
+        <a href="index.html" class="flex items-center gap-2 font-bold text-xl tracking-tight text-slate-900">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs">OBR</div>
+            <span>Open Business Record</span>
+        </a>
+        <div class="flex gap-6 text-sm font-medium text-slate-600">
+            <a href="index.html#problem" class="hover:text-blue-600">Problem</a>
+            <a href="docs/how-it-works.html" class="hover:text-blue-600">How it works</a>
+            <a href="docs/obr-spec.json" class="hover:text-blue-600">The Spec</a>
+            <a href="src/generator-form.html" class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-700 transition">Get Verified</a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 py-12">
+        <h1 class="text-3xl font-bold mb-6">Verified Businesses</h1>
+        <div id="directory-grid" class="text-left"></div>
+        <p id="directory-status" class="text-slate-500 text-sm mt-4"></p>
+    </main>
+
+    <script>
+        const GITHUB_OWNER = 'openbusinessrecord';
+        const GITHUB_REPO = 'openbusinessrecord.github.io';
+        const RECORDS_PATH = 'records';
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function decodeValue(enc) {
+            if (!enc) return '';
+            try {
+                return decodeURIComponent(escape(atob(enc)));
+            } catch (e) { return ''; }
+        }
+
+        async function loadDirectory() {
+            const container = document.getElementById('directory-grid');
+            const statusEl = document.getElementById('directory-status');
+            container.innerHTML = '';
+            statusEl.textContent = 'Loading…';
+            try {
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${RECORDS_PATH}`);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        statusEl.textContent = 'No records yet. Register your business to appear here.';
+                        return;
+                    }
+                    throw new Error(response.statusText);
+                }
+                const files = await response.json();
+                const jsonFiles = Array.isArray(files) ? files.filter(f => f.name && f.name.endsWith('.json')) : [];
+                if (jsonFiles.length === 0) {
+                    statusEl.textContent = 'No records yet. Register your business to appear here.';
+                    return;
+                }
+                for (const file of jsonFiles) {
+                    try {
+                        const dataRes = await fetch(file.download_url);
+                        const business = await dataRes.json();
+                        const name = business.name || 'Unnamed';
+                        const url = business.url || business.address || '';
+                        const telephone = business.telephone || '';
+                        const email = business.email || '';
+                        const whatsapp = (business.obr_metadata && business.obr_metadata.whatsapp) ? business.obr_metadata.whatsapp : '';
+                        const lastPulse = business.obr_metadata && business.obr_metadata.last_pulse ? business.obr_metadata.last_pulse : '—';
+                        var telEnc = '', emailEnc = '', waEnc = '';
+                        try {
+                            telEnc = telephone ? btoa(unescape(encodeURIComponent(telephone))) : '';
+                            emailEnc = email ? btoa(unescape(encodeURIComponent(email))) : '';
+                            waEnc = whatsapp ? btoa(unescape(encodeURIComponent(whatsapp))) : '';
+                        } catch (e) {}
+                        const card = document.createElement('div');
+                        card.className = 'directory-card';
+                        card.innerHTML = `
+                            <h3>${escapeHtml(name)}</h3>
+                            ${url ? '<p class="mb-2">' + escapeHtml(url) + '</p>' : ''}
+                            ${telephone ? '<div class="contact-row"><span class="label">Phone</span><span class="value"></span><button type="button" class="reveal-btn" data-enc="${escapeHtml(telEnc)}" data-kind="tel">Show</button></div>' : ''}
+                            ${email ? '<div class="contact-row"><span class="label">Email</span><span class="value"></span><button type="button" class="reveal-btn" data-enc="${escapeHtml(emailEnc)}" data-kind="email">Show</button></div>' : ''}
+                            ${whatsapp ? '<div class="contact-row"><span class="label">WhatsApp</span><span class="value"></span><button type="button" class="reveal-btn" data-enc="${escapeHtml(waEnc)}" data-kind="wa">Show</button></div>' : ''}
+                            <span class="badge">Verified Pulse: ${escapeHtml(lastPulse)}</span>
+                        `;
+                        card.querySelectorAll('.reveal-btn').forEach(function(btn) {
+                            btn.addEventListener('click', function() {
+                                var enc = btn.getAttribute('data-enc');
+                                var kind = btn.getAttribute('data-kind');
+                                var value = decodeValue(enc);
+                                if (!value) return;
+                                var row = btn.closest('.contact-row');
+                                var valueSpan = row ? row.querySelector('.value') : null;
+                                if (!valueSpan) return;
+                                if (kind === 'tel') {
+                                    valueSpan.innerHTML = '<a href="tel:' + value.replace(/[^\d+]/g, '') + '">' + escapeHtml(value) + '</a>';
+                                } else if (kind === 'email') {
+                                    valueSpan.innerHTML = '<a href="mailto:' + escapeHtml(value) + '">' + escapeHtml(value) + '</a>';
+                                } else if (kind === 'wa') {
+                                    var num = value.replace(/\D/g, '');
+                                    if (!num.startsWith('0') && !num.startsWith('1')) num = '1' + num;
+                                    valueSpan.innerHTML = '<a href="https://wa.me/' + num + '" target="_blank" rel="noopener">' + escapeHtml(value) + '</a>';
+                                }
+                                btn.remove();
+                            });
+                        });
+                        container.appendChild(card);
+                    } catch (e) {
+                        console.warn('Failed to load ' + file.name, e);
+                    }
+                }
+                statusEl.textContent = container.children.length + ' record(s) loaded.';
+            } catch (e) {
+                console.error('loadDirectory error:', e);
+                statusEl.textContent = 'Could not load directory. Try again later.';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', loadDirectory);
+    </script>
+</body>
+</html>
