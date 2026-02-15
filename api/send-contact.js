@@ -2,8 +2,10 @@
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = 'Open Business Record <contact@mail.openbusinessrecord.org>';
-const TO = process.env.CONTACT_TO_EMAIL || 'contact@mail.openbusinessrecord.org';
+// Resend: use email only to avoid "string did not match the expected pattern" on display-name format
+const FROM = 'contact@mail.openbusinessrecord.org';
+const DEFAULT_TO = 'contact@mail.openbusinessrecord.org';
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default async function handler(req, res) {
     const origin = req.headers.origin || '';
@@ -28,8 +30,21 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Email and message are required.' });
     }
 
+    const replyTo = String(email).trim().toLowerCase();
+    if (!EMAIL_REGEX.test(replyTo)) {
+        return res.status(400).json({ error: 'Please provide a valid email address.' });
+    }
+
+    const toAddress = (process.env.CONTACT_TO_EMAIL || DEFAULT_TO).trim().toLowerCase();
+    if (!EMAIL_REGEX.test(toAddress)) {
+        return res.status(500).json({ error: 'Server contact address is misconfigured. Please email contact@mail.openbusinessrecord.org directly.' });
+    }
+
+    const subjectSnippet = String(message).replace(/\s+/g, ' ').trim().slice(0, 50);
+    const subject = 'OBR Contact: ' + (name ? String(name).trim() + ' – ' : '') + subjectSnippet + (message.length > 50 ? '…' : '');
+
     const html = [
-        '<p><strong>From:</strong> ' + (name ? escapeHtml(name) + ' &lt;' + escapeHtml(email) + '&gt;' : escapeHtml(email)) + '</p>',
+        '<p><strong>From:</strong> ' + (name ? escapeHtml(name) + ' &lt;' + escapeHtml(replyTo) + '&gt;' : escapeHtml(replyTo)) + '</p>',
         '<p><strong>Message:</strong></p>',
         '<pre style="white-space:pre-wrap;font-family:inherit;">' + escapeHtml(message) + '</pre>'
     ].join('');
@@ -37,9 +52,9 @@ export default async function handler(req, res) {
     try {
         const { data, error } = await resend.emails.send({
             from: FROM,
-            to: [TO],
-            replyTo: email,
-            subject: 'OBR Contact: ' + (name ? name + ' – ' : '') + (message.slice(0, 50) + (message.length > 50 ? '…' : '')),
+            to: [toAddress],
+            replyTo,
+            subject,
             html
         });
         if (error)
