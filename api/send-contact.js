@@ -1,9 +1,9 @@
-// api/send-contact.js – sends contact form via Resend from contact@openbusinessrecord.org
+// api/send-contact.js – sends contact form via Resend from contact@mail.openbusinessrecord.org
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = 'Open Business Record <contact@openbusinessrecord.org>';
-const TO = process.env.CONTACT_TO_EMAIL || 'contact@openbusinessrecord.org';
+const FROM = 'Open Business Record <contact@mail.openbusinessrecord.org>';
+const TO = process.env.CONTACT_TO_EMAIL || 'contact@mail.openbusinessrecord.org';
 
 export default async function handler(req, res) {
     const origin = req.headers.origin || '';
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method Not Allowed' });
 
     if (!process.env.RESEND_API_KEY)
-        return res.status(500).json({ error: 'Contact form is not configured (RESEND_API_KEY). Please email contact@openbusinessrecord.org directly.' });
+        return res.status(500).json({ error: 'Contact form is not configured (RESEND_API_KEY). Please email contact@mail.openbusinessrecord.org directly.' });
 
     const { name, email, message } = req.body || {};
     if (!email || !message) {

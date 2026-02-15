@@ -1,0 +1,10 @@
+# .github/workflows/daily-pulse.yml
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs at midnight every day
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run OBR Scraper
+        run: node scraper.js
