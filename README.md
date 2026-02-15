@@ -104,3 +104,12 @@ By making the file transparent and easy to parse, you protect the owner from the
 | [**Create Your Record**](docs/how-it-works.html) | Use the 60-second form to generate and host your `obr-business.json`. |
 | [**Reference Scraper**](src/scraper.js) | Download the Node.js tool to start indexing OBR data. |
 | [**Browse the Directory**](index.html#directory) | See the first OBR-compliant local index in action. |
+| [**Contact**](contact.html) | Email or use the contact form (delivered via [Resend](https://resend.com) from `contact@openbusinessrecord.org`). |
+
+### Contact form (Resend)
+
+The contact page offers a **mailto** link and an optional form that sends via [Resend](https://resend.com) from **openbusinessrecord.org**. To enable the form when deploying the API (e.g. on Vercel):
+
+1. Add and verify the domain **openbusinessrecord.org** in [Resend → Domains](https://resend.com/domains).
+2. Create an API key at [Resend → API Keys](https://resend.com/api-keys) and set **`RESEND_API_KEY`** in your deployment environment.
+3. Optionally set **`CONTACT_TO_EMAIL`** to the inbox where you want to receive messages (default: `contact@openbusinessrecord.org`).
