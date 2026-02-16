@@ -8,11 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .contact-form input, .contact-form textarea { display: block; width: 100%; padding: 10px 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
-        .contact-form textarea { min-height: 120px; resize: vertical; }
-        #formStatus { display: none; margin-top: 12px; padding: 10px 12px; border-radius: 8px; font-size: 14px; }
-        #formStatus.success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
-        #formStatus.error { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
     </style>
 </head>
 <body class="text-slate-900">
@@ -34,66 +29,16 @@
 
     <main class="max-w-2xl mx-auto px-6 py-16">
         <h1 class="text-4xl font-extrabold tracking-tight mb-2">Contact</h1>
-        <p class="text-slate-600 mb-10">Reach us at Open Business Record. We use <strong>mail.openbusinessrecord.org</strong> for email.</p>
+        <p class="text-slate-600 mb-10">Reach us at Open Business Record.</p>
 
         <section class="mb-12">
             <h2 class="text-xl font-semibold mb-3">Email</h2>
             <p class="text-slate-600 mb-4">Send a message directly to:</p>
-            <a href="mailto:contact@mail.openbusinessrecord.org" class="inline-block bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium px-5 py-3 rounded-xl transition">contact@mail.openbusinessrecord.org</a>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-semibold mb-3">Or use this form</h2>
-            <p class="text-slate-600 mb-4">We’ll receive it at the same address via Resend.</p>
-            <form id="contactForm" class="contact-form">
-                <input type="text" name="name" placeholder="Your name" required>
-                <input type="email" name="email" placeholder="Your email" required>
-                <textarea name="message" placeholder="Your message" required></textarea>
-                <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition">Send message</button>
-            </form>
-            <div id="formStatus" role="alert"></div>
+            <a href="mailto:a67160672@gmail.com" class="inline-block bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium px-5 py-3 rounded-xl transition">a67160672@gmail.com</a>
         </section>
 
         <p class="mt-12 text-slate-500 text-sm"><a href="index.html" class="text-blue-600 hover:underline">← Back to home</a></p>
     </main>
 
-    <script>
-        (function () {
-            var form = document.getElementById('contactForm');
-            var status = document.getElementById('formStatus');
-            var apiBase = window.OBR_API_BASE || '';
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                status.style.display = 'none';
-                status.className = '';
-                var fd = new FormData(form);
-                var body = JSON.stringify({
-                    name: fd.get('name'),
-                    email: fd.get('email'),
-                    message: fd.get('message')
-                });
-                fetch(apiBase + '/api/send-contact', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: body
-                })
-                    .then(function (res) {
-                        if (res.ok) {
-                            status.textContent = 'Message sent. We’ll get back to you soon.';
-                            status.className = 'success';
-                            status.style.display = 'block';
-                            form.reset();
-                        } else {
-                            return res.json().then(function (data) { throw new Error(data.error || 'Failed to send'); });
-                        }
-                    })
-                    .catch(function (err) {
-                        status.textContent = err.message || 'Something went wrong. Please email us directly.';
-                        status.className = 'error';
-                        status.style.display = 'block';
-                    });
-            });
-        })();
-    </script>
 </body>
 </html>
