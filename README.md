@@ -113,3 +113,5 @@ The contact page offers a **mailto** link and an optional form that sends via [R
 1. Add and verify the domain **openbusinessrecord.org** in [Resend → Domains](https://resend.com/domains).
 2. Create an API key at [Resend → API Keys](https://resend.com/api-keys) and set **`RESEND_API_KEY`** in your deployment environment.
 3. Optionally set **`CONTACT_TO_EMAIL`** to the inbox where you want to receive messages (default: `contact@mail.openbusinessrecord.org`).
+
+When the site is served from GitHub Pages (e.g. openbusinessrecord.org or openbusinessrecord.github.io), the form posts to **https://openbusinessrecord-github-io.vercel.app/api/send-contact** so the API runs on Vercel. If your Vercel deployment URL is different, set `window.OBR_API_BASE` before the form loads (e.g. in a script tag).

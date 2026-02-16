@@ -61,7 +61,10 @@
         (function () {
             var form = document.getElementById('contactForm');
             var status = document.getElementById('formStatus');
-            var apiBase = window.OBR_API_BASE || '';
+            // GitHub Pages doesn't run API routes; use Vercel deployment when site is on Pages
+            var origin = window.location.origin;
+            var defaultApiBase = (origin === 'https://openbusinessrecord.org' || origin === 'https://openbusinessrecord.github.io') ? 'https://openbusinessrecord-github-io.vercel.app' : '';
+            var apiBase = window.OBR_API_BASE || defaultApiBase;
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 status.style.display = 'none';
