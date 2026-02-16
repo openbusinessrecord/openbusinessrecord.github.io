@@ -104,14 +104,14 @@ By making the file transparent and easy to parse, you protect the owner from the
 | [**Create Your Record**](docs/how-it-works.html) | Use the 60-second form to generate and host your `obr-business.json`. |
 | [**Reference Scraper**](src/scraper.js) | Download the Node.js tool to start indexing OBR data. |
 | [**Browse the Directory**](index.html#directory) | See the first OBR-compliant local index in action. |
-| [**Contact**](contact.html) | Email or use the contact form (delivered via [Resend](https://resend.com) from `contact@mail.openbusinessrecord.org`). |
+| [**Contact**](contact.html) | Email or use the contact form (delivered via [Resend](https://resend.com) from `contact@openbusinessrecord.org`). |
 
 ### Contact form (Resend)
 
-The contact page offers a **mailto** link and an optional form that sends via [Resend](https://resend.com) from **contact@mail.openbusinessrecord.org**. To enable the form when deploying the API (e.g. on Vercel):
+The contact page offers a **mailto** link and an optional form that sends via [Resend](https://resend.com) from **contact@openbusinessrecord.org**. To enable the form when deploying the API (e.g. on Vercel):
 
-1. Add and verify the domain **openbusinessrecord.org** in [Resend → Domains](https://resend.com/domains).
-2. Create an API key at [Resend → API Keys](https://resend.com/api-keys) and set **`RESEND_API_KEY`** in your deployment environment.
-3. Optionally set **`CONTACT_TO_EMAIL`** to the inbox where you want to receive messages (default: `contact@mail.openbusinessrecord.org`).
+1. **Verify the sending domain** in [Resend → Domains](https://resend.com/domains). Add **openbusinessrecord.org**. Add the DNS records Resend shows (MX, SPF, DKIM, etc.) at your DNS provider and wait for verification. If you see a "domain is not verified" error, the form will fail until this step is done.
+2. Create an API key at [Resend → API Keys](https://resend.com/api-keys) and set **`RESEND_API_KEY`** in your deployment environment (e.g. Vercel project settings).
+3. Optionally set **`CONTACT_TO_EMAIL`** to the inbox where you want to receive messages (default: `contact@openbusinessrecord.org`).
 
 When the site is served from GitHub Pages (e.g. openbusinessrecord.org or openbusinessrecord.github.io), the form posts to **https://openbusinessrecord-github-io.vercel.app/api/send-contact** so the API runs on Vercel. If your Vercel deployment URL is different, set `window.OBR_API_BASE` before the form loads (e.g. in a script tag).

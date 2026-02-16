@@ -1,10 +1,10 @@
-// api/send-contact.js – sends contact form via Resend from contact@mail.openbusinessrecord.org
+// api/send-contact.js – sends contact form via Resend from contact@openbusinessrecord.org
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 // Resend: use email only to avoid "string did not match the expected pattern" on display-name format
-const FROM = 'contact@mail.openbusinessrecord.org';
-const DEFAULT_TO = 'contact@mail.openbusinessrecord.org';
+const FROM = 'contact@openbusinessrecord.org';
+const DEFAULT_TO = 'contact@openbusinessrecord.org';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default async function handler(req, res) {
@@ -23,9 +23,13 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method Not Allowed' });
 
     if (!process.env.RESEND_API_KEY)
-        return res.status(500).json({ error: 'Contact form is not configured (RESEND_API_KEY). Please email contact@mail.openbusinessrecord.org directly.' });
+        return res.status(500).json({ error: 'Contact form is not configured (RESEND_API_KEY). Please email contact@openbusinessrecord.org directly.' });
 
-    const { name, email, message } = req.body || {};
+    let body = req.body;
+    if (typeof body === 'string') {
+        try { body = JSON.parse(body); } catch (_) { return res.status(400).json({ error: 'Invalid request body.' }); }
+    }
+    const { name, email, message } = body || {};
     if (!email || !message) {
         return res.status(400).json({ error: 'Email and message are required.' });
     }
@@ -37,7 +41,7 @@ export default async function handler(req, res) {
 
     const toAddress = (process.env.CONTACT_TO_EMAIL || DEFAULT_TO).trim().toLowerCase();
     if (!EMAIL_REGEX.test(toAddress)) {
-        return res.status(500).json({ error: 'Server contact address is misconfigured. Please email contact@mail.openbusinessrecord.org directly.' });
+        return res.status(500).json({ error: 'Server contact address is misconfigured. Please email contact@openbusinessrecord.org directly.' });
     }
 
     const subjectSnippet = String(message).replace(/\s+/g, ' ').trim().slice(0, 50);
@@ -57,8 +61,10 @@ export default async function handler(req, res) {
             subject,
             html
         });
-        if (error)
-            return res.status(400).json({ error: error.message || 'Failed to send email' });
+        if (error) {
+            const msg = (error && (error.message || (typeof error === 'string' ? error : null))) || 'Failed to send email';
+            return res.status(400).json({ error: msg });
+        }
         return res.status(200).json({ ok: true, id: data?.id });
     } catch (e) {
         return res.status(500).json({ error: e.message || 'Failed to send email' });
