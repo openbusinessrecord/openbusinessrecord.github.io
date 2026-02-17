@@ -1,0 +1,15 @@
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "olfactory",
+  "address": "1234 fake",
+  "telephone": "780123445967",
+  "email": "a@b.com",
+  "obr_metadata": {
+    "protocol": "OBR-v1.0",
+    "last_pulse": "2026-02-02",
+    "hosting": "registry",
+    "whatsapp": "",
+    "status": "active"
+  }
+}
